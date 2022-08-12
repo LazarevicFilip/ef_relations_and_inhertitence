@@ -1,0 +1,2 @@
+# ef_relations_and_inhertitence
+Inheritance means specialization
