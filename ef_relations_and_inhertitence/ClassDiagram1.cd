@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Brick">
+    <Position X="1.25" Y="2" Width="1.5" />
+    <Members>
+      <Property Name="BrickAvailabilities" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAACAAAACAAAAEAAAAAAAAAAAAAAAEAAAAAAgAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="BrickAvailabilities" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Tag">
+    <Position X="3.5" Y="1.5" Width="1.5" />
+    <Members>
+      <Property Name="Bricks" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAEAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Bricks" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="BasePlate">
+    <Position X="1" Y="4.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAEBAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MinifigHead">
+    <Position X="3.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Vendor">
+    <Position X="6.5" Y="4.75" Width="1.5" />
+    <Members>
+      <Property Name="BrickAvailabilities" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>BAACAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="BrickAvailabilities" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="BrickAvailability">
+    <Position X="6.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABACAAAAAQAAAAAAAAABAAAIAAAAAABAAAAAAAAIAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Brick" />
+      <Property Name="Vendor" />
+    </ShowAsAssociation>
+  </Class>
+  <Enum Name="Color">
+    <Position X="6.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAAAAAAAgAAAAAAAAAABAAAAAAAAAAAADAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
