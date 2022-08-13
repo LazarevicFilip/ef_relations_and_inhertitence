@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -22,16 +23,76 @@ all dependencies needed for console app to work with ef
 
 var factory = new BrickContextFactory();
 using var context = factory.CreateDbContext();
-await AddData();
-static async Task AddData()
+//await AddData(context);
+await QueryData(context);
+static async Task QueryData(BrickContext context)
 {
-    //Vendor brickKing, heldDerSteine;
-    //await context.AddRangeAsync(new
-    //{
-    //    brickKing = new Vendor{VendorName = "Brick King",}
-    //    brickKing = new Vendor{VendorName =  "heldDerSteine", }
-    //});
+    //ef does join of these 3 tables in the background, include enforcing join of tables(i.e enfroce eager loading) and join fills related data and lists, without include relation will be null but forgnKey will be loaded but still null refrence, load obj graphs with single query using include clause, load related data with base objects/entities 
+    var availabilityData = await context.BrickAvailabilitys
+                                .Include(ba => ba.Brick)
+                                //simple include clauses
+                                .Include(ba => ba.Vendor)
+                                .ToListAsync();
+    foreach (var availability in availabilityData)
+    {
+        Console.WriteLine($"{availability.Brick.Title} avaible at {availability.Vendor.VendorName} for {availability.Price}");
+    }
+    var bricksWithTagsAndVendors = await context.Bricks
+        //include clauses for complex navigation through connection/pivot tables
+        .Include(nameof(Brick.BrickAvailabilities) + "." + nameof(BrickAvailability.Vendor))
+        .Include(x => x.Tags)
+        //include clauses when 1:m
+        //.Where(b => b.Tags.Any(t => t.Title == "minecraft")) in this case include is not needed explicitly bcs of where it will load relation automatically(when have relation directly in linq clauses), otherwise when you dont have specific refrence in linq query but need data from related model outside of the linq query that need include
+        .ToListAsync();
+    foreach (var brick in bricksWithTagsAndVendors)
+    {
+        Console.Write($"{brick.Title}");
+        if (brick.Tags.Any()) Console.Write($"({string.Join(", ", brick.Tags.Select(x => x.Title))})");
+        if (brick.BrickAvailabilities.Any()) Console.Write($"({string.Join(", ", brick.BrickAvailabilities.Select(x => x.Vendor.VendorName))})");
+    }
+        var singleBrick = await context.Bricks.ToListAsync();
+    foreach (var brick in singleBrick)
+    {
+        //ask ef to explicitly load related data for specific item a bit later, after the orginal query is already be done
+        await context.Entry(brick).Collection(i => i.Tags).LoadAsync(); //explicitly load tahs for specific item if we need it
+        Console.Write($"{brick.Title}");
+        if (brick.Tags.Any()) Console.Write($"({string.Join(", ", brick.Tags.Select(x => x.Title))})");
+    }
 }
+//static async Task AddData(BrickContext context)
+//{
+//    Vendor brickKing, heldDerSteine;
+//    await context.AddRangeAsync(new[]
+//    {
+//        brickKing = new Vendor { VendorName = "Brick King" },
+//        heldDerSteine = new Vendor { VendorName = "heldDerSteine" }, 
+//    });
+//    await context.SaveChangesAsync();
+//    Tag rare, ninajago,minecraft;
+//    await context.AddRangeAsync(new[]
+//    {
+//        rare = new Tag { Title = "rare" },
+//        ninajago = new Tag { Title = "ninajago" },
+//        minecraft = new Tag { Title = "minecraft" },
+//    });
+//    await context.SaveChangesAsync();
+//    //addding obj graph to db with ef using m:n and m:1 relations
+//    //building more complex obj graph in one go, adding multiple related obj even for m:n relationship in single row,obj are tight with references and will insert in all 3 tables, ef split into multiple insert statement into multiple tables
+//    await context.AddAsync(new BasePlate()
+//    {
+//        Title = "BasePlate 16 x 16 with blue pattern",
+//        Color = Color.Green,
+//        Tags = new() { rare , ninajago },
+//        Length = 16,
+//        Width = 16,
+//        BrickAvailabilities = new() 
+//        {
+//            new BrickAvailability { Vendor = brickKing,Price=333},
+//            new BrickAvailability { Vendor = heldDerSteine, Price=5555}
+//        }
+//    });
+//    await context.SaveChangesAsync();
+//}
 
 #region Models
 //in db this will become int(ef stores enum like that) and it reflect the int behind the enum value
@@ -127,7 +188,7 @@ class BrickContextFactory: IDesignTimeDbContextFactory<BrickContext>
         optionsBuilder
             // Uncomment the following line if you want to print generated
             // SQL statements on the console.
-            // .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
+            .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
             .UseSqlServer(configuration["ConnectionStrings:DefaultConnection"]);
 
         return new BrickContext(optionsBuilder.Options);
